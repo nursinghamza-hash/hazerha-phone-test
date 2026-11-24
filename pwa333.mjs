@@ -1,0 +1,3 @@
+// Opt-in only. No registration until the local user chooses the button.
+const button=document.getElementById('enableApp'),status=document.getElementById('appStatus');
+if(button)button.onclick=async()=>{button.disabled=true;try{if(!('serviceWorker'in navigator))throw Error('unsupported');await navigator.serviceWorker.register(new URL('./sw333.js',import.meta.url),{scope:'./'});await navigator.serviceWorker.ready;status.textContent='تم تجهيز وضع التطبيق على هذا المتصفح. التثبيت يعتمد على دعم المتصفح، وقد تحتاج إضافته من قائمته. اللعب الجماعي يحتاج اتصالاً؛ لا نحفظ الأدوار أو الردود في ذاكرة أوفلاين.'}catch{status.textContent='لم يتأكد تجهيز التطبيق. افتح الموقع عبر اتصال آمن ومتصفح يدعم هذه الميزة. لا تغيير على مقعدك المحفوظ.'}finally{button.disabled=false}};

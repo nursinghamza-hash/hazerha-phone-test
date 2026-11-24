@@ -1,0 +1,25 @@
+@font-face{font-family:Tajawal;src:url('fonts/tajawal/regular.ttf');font-weight:400;font-display:swap}@font-face{font-family:Tajawal;src:url('fonts/tajawal/bold.ttf');font-weight:700;font-display:swap}@font-face{font-family:Tajawal;src:url('fonts/tajawal/black.ttf');font-weight:900;font-display:swap}
+/* Reference-section palette. Geometry and game-specific meaning stay in each game. */
+:root{--ref-black:#0b0b0b;--ref-panel:#1c1b19;--ref-cream:#ece7dd;--ref-muted:#bdb8ae;--ref-line:#555149;--ref-yellow:#ffca00;--ref-blue:#3178fa;--ref-red:#ff2859}
+body.ref-game{background:#0b0b0b!important;color:var(--ref-cream)!important;font-family:Tajawal,system-ui,sans-serif!important}
+.ref-game button,.ref-game input,.ref-game select{font-family:inherit}
+.ref-game h1,.ref-game h2,.ref-game h3{font-weight:900}
+.ref-game a,.ref-game .mut{color:var(--ref-muted)}
+.ref-game .card,.ref-game details{background:var(--ref-panel);border-radius:22px}
+.ref-game input,.ref-game select{background:#131312;color:var(--ref-cream);border-color:var(--ref-line)}
+.ref-game button{background:var(--ref-cream);color:#151515;border-color:#7d786e}
+.ref-game button.secondary,.ref-game button.ghost{background:#2a2824;color:var(--ref-cream);border-color:#686258}
+.ref-game button:focus-visible,.ref-game input:focus-visible,.ref-game select:focus-visible,.ref-game a:focus-visible,.ref-game summary:focus-visible{outline:3px solid var(--ref-yellow);outline-offset:3px}
+.ref-game .badge{background:#2e2a1b;color:#ffe080}.ref-game #deadline,.ref-game .winner{color:var(--ref-yellow)}
+.ref-game .picks li,.ref-game .status{background:#131312}.ref-game .picks button{background:#38342e;color:var(--ref-cream)}
+.ref-game .standings li{border-color:#555149}.ref-game #ownStatus{color:#b4e9cf}
+.ref-game #error{color:#ffbdca}
+/* Do not recolor SVG maps, flags, chess squares or selected puzzle tiles here. */
+
+.ref-game #shape,.ref-game #flag,.ref-game #flagPicture,.ref-game #curveSvg{background:#131312}.ref-game #dailyDateNotice,.ref-game #dailyJourney{background:#1c1b19!important;color:#ece7dd!important;font-family:Tajawal,system-ui,sans-serif!important;border-color:#686258!important}
+.ref-game .kicker{color:#bdb8ae}.ref-game #board small{color:#fff}
+.ref-game #board .sq small{color:#142723}.ref-game #board .sq.dark small{color:#fff}
+/* HAZERHA332 original identity, no changes to puzzle semantics. */
+:root{--ref-black:#111f29;--ref-panel:#1b303e;--ref-cream:#fff6df;--ref-muted:#c0cdd0;--ref-line:#7897a3;--ref-yellow:#f4c458;--ref-blue:#3157df;--ref-red:#ff805c}
+body.ref-game{background:var(--ref-black)!important}.ref-game .card,.ref-game details{background:var(--ref-panel)}.ref-game button.secondary,.ref-game button.ghost{background:#294454}.ref-game #error{color:#ffb7aa}
+@media(prefers-reduced-motion:reduce){.ref-game *{animation:none!important;transition:none!important}}

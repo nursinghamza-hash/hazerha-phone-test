@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>فريق ضد فريق | 🧩 حزرها | HAZERHA</title>
+<style>
+:root{--bg:#0e0f14;--card:#1a1c26;--ink:#f4f1ea;--mut:#9aa0b4;--red:#ff3b5c;--blue:#2a5bff;--gold:#ffd23f}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;min-height:100vh}
+button{font:inherit;color:inherit;cursor:pointer;border:0}
+.screen{display:none;padding:18px;max-width:1100px;margin:0 auto}.screen.on{display:block}
+h1{margin:6px 0 16px;font-size:2rem}
+.card{background:var(--card);border-radius:18px;padding:16px;margin-bottom:14px}
+label{display:block;color:var(--mut);margin:8px 0 4px;font-size:.95rem}
+input[type=text]{width:100%;padding:12px;border-radius:12px;border:2px solid #2a2d3d;background:#12141c;color:var(--ink);font-size:1.1rem}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:10px 14px;border-radius:999px;background:#12141c;border:2px solid #2a2d3d;font-size:1rem}
+.chip.sel{border-color:var(--gold);background:#2a2610}
+.big{background:var(--gold);color:#111;font-weight:800;font-size:1.2rem;padding:14px 26px;border-radius:14px}
+.ghost{background:#262939;padding:10px 16px;border-radius:12px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.team{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:16px;background:var(--card);border:3px solid transparent}
+.team.turn{border-color:var(--gold)}
+.team b{font-size:2.2rem}.team.a b{color:var(--blue)}.team.b b{color:var(--red)}
+.adj button{display:block;width:30px;height:26px;margin:2px 0;border-radius:8px;background:#262939}
+.board{display:grid;gap:8px;overflow-x:auto;padding:4px 2px;scrollbar-color:var(--gold) var(--card)}
+.col h3{text-align:center;margin:0 0 6px;font-size:1rem}
+.tile{display:block;width:100%;margin-bottom:8px;padding:16px 0;font-size:1.5rem;font-weight:800;border-radius:12px;background:#262939}
+.tile.done{opacity:.3;pointer-events:none}.tile.wa{background:var(--blue);opacity:.55}.tile.wb{background:var(--red);opacity:.55}
+.modal{position:fixed;inset:0;width:100vw;max-width:100vw;background:var(--bg);display:none;flex-direction:column;padding:18px;overflow:auto;z-index:5}
+.modal.on{display:flex}
+.mhead{display:flex;justify-content:space-between;align-items:center;color:var(--mut);gap:8px}
+.timer{width:64px;height:64px;border-radius:50%;border:5px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800}
+.timer.low{border-color:var(--red);color:var(--red)}
+.qtext{font-size:clamp(1.6rem,5vw,3rem);font-weight:800;text-align:center;margin:28px 0}
+.turnbar{text-align:center;font-size:1.2rem;margin-bottom:8px}
+.keys{direction:ltr;display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:600px;margin:10px auto;width:100%}
+.keys button{padding:18px 0;font-size:1.6rem;border-radius:14px;background:#262939}.keys button.big{background:var(--gold);color:#111}.big:disabled{background:#3a3620;color:#d6cfa2;cursor:not-allowed}
+.num{font-size:3.5rem;text-align:center;min-height:5rem;font-weight:800}
+.ans{font-size:clamp(2rem,6vw,3.5rem);text-align:center;color:var(--gold);font-weight:800;margin:12px 0}
+.judge{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.judge button{min-width:170px;padding:20px;font-size:1.3rem;font-weight:800;border-radius:16px}
+.jA{background:var(--blue)}.jB{background:var(--red)}.jN{background:#262939}.jhint{outline:4px solid var(--gold)}
+.guess{display:flex;gap:10px;justify-content:center;margin:12px 0}.gc{flex:1;max-width:260px;border:3px solid;border-radius:16px;padding:10px;text-align:center;background:var(--card)}.gn{font-size:1rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gv{font-size:clamp(1.3rem,6vw,2.2rem);font-weight:800}.gs{color:var(--mut);font-size:.95rem}
+.small{color:var(--mut);text-align:center}.tools{margin:4px auto 8px;max-width:600px;text-align:center}.tools summary{display:inline-block;cursor:pointer;color:var(--mut);padding:6px 14px;border-radius:999px;background:#1a1c26;list-style:none}.tools[open] summary{color:var(--gold)}.dblbadge{text-align:center;color:var(--gold);font-weight:800;min-height:0}.pwbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:6px}.pwbar button{background:#2a2610;border:2px solid var(--gold);color:var(--gold);padding:8px 14px;border-radius:12px;font-weight:700}.pwbar .on{color:var(--gold);font-weight:800}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-inline-end:8px;vertical-align:middle}
+.col h3 .dot{display:block;margin:0 auto 6px}
+@media(max-width:640px){.top{flex-wrap:wrap;justify-content:center}.team{max-width:calc(50% - 6px);min-width:0}.top>#swap{order:3}.team>div{min-width:0}.team .adj{flex-shrink:0}.judge .zb{min-width:0;flex:1;padding:12px;font-size:1.3rem}.judge #mlock{min-width:100%;padding:14px}.screen{padding:12px}h1{font-size:1.5rem}.top{gap:6px}.team{padding:6px 8px}.team b{font-size:1.6rem}.board{gap:4px}.col h3{font-size:.72rem}.tile{font-size:1.05rem;padding:14px 0;margin-bottom:5px;border-radius:9px}.judge button{min-width:100%}.keys button{padding:14px 0}.qtext{margin:16px 0}#tan,#tbn{font-size:.8rem;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mhead{flex-wrap:wrap}}
+.memorygrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;direction:ltr;width:min(100%,340px);margin:16px auto}.memorycell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:#262939;border:2px solid #48506a;border-radius:10px;font:700 1.3rem monospace;color:#bfc6d9}.memorycell.lit{background:#8bd6b4;color:#122820;border-color:#b4f5d6}.memorynote{font-size:1rem;font-weight:400;color:var(--ink);max-width:640px;margin:12px auto;line-height:1.8;text-align:center}.laserboard{display:grid;grid-template-columns:16px repeat(5,minmax(0,1fr)) 16px;gap:4px;direction:ltr;max-width:370px;width:100%;margin:14px auto}.lasercell{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#262939;font:700 1.5rem monospace;border:1px solid #62697f}.lasercell.edge{background:transparent;border-color:transparent}.lasercell.entry{color:#fff}.lasercell.target{color:#ffd23f}.lasercell.ray{background:#5f602d;border-color:#e0df84}.comparechoices{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:620px;margin:auto}.comparechoices button{min-height:90px;font-size:1.25rem}.comparechoices button[aria-pressed=true]{outline:3px solid var(--gold)}</style>
+<link rel="stylesheet" href="identity.css"></head>
+<body>
+<section id="corruptSave" class="screen"><h1>الحفظ غير قابل للقراءة</h1><div class="card"><p>أبقينا البيانات كما هي ولم نبدأ لوحة بديلة. حاول إعادة التحميل أو احذف حفظ فريق ضد فريق فقط، بما فيه الدرجات.</p><button id="forgetSave" class="ghost">احذف حفظ هذه اللعبة</button></div><a href="../" style="color:var(--mut)">العودة للألعاب</a></section><section id="setup" class="screen on">
+ <h1>فريق ضد فريق</h1><details class="card"><summary>قواعد اللعبة</summary><p>اختاروا التصنيفات وأسماء الفريقين، ثم افتحوا خانة من لوحة النقاط بالتناوب. بعد انتهاء الوقت اكشفوا الجواب وحدّدوا الفريق الذي أجاب أو اختاروا لا أحد. أسئلة الرقم والخريطة تقارن قرب إجابة الفريقين. يمكن استخدام مضاعفة النقاط أو سرقة نصف النقاط حسب الخيارات الظاهرة. بعض الخانات تحمل كنزاً أو قنبلة عند تفعيل المفاجآت.</p><p>ذاكرة المسار: يرى الفريقان معاً المسار مرة واحدة لمدة 5 ثوانٍ. بعد اختفائه يكتب كل فريق تسلسل الإحداثيات سراً (صف، عمود) ثم يثبته قبل كشف الحل. يحكم المضيف يدوياً؛ لا تسجّلوا الإجابات أثناء العرض. التعادل في الإجابات الكاملة يترك بلا فائز أو يُحسم باتفاقكم قبل اللعب. تحدّي التوقيت: دور لكل فريق على الجهاز نفسه. شغّلوا العداد ثم أوقفوه عند الوقت المطلوب؛ تختفي الأرقام بعد ثانية. الأقرب يفوز، ويحكم المضيف بعد دور الفريقين. إعادة تحميل العداد الجاري تلغي المحاولة غير المكتملة فقط، ولا تعيد دور الفريق الذي انتهى. مثّلها بصمت: يعرض الجهاز الفكرة للممثّل وحده قبل البدء، ثم يخفيها. فريقه يخمّن خلال 60 ثانية بلا كلام أو كتابة أو تهجئة من الممثّل. القرار للمضيف وقبول المعنى كافٍ. لا تنتقل الفرصة للفريق الثاني. مقارنات المساحة والسكان: يختار كل فريق سراً على الجهاز ثم تظهر قيم البنك الدولي لعام 2024. لا مؤقّت، والمضيف يحكم. إن أصاب الفريقان أو أخطآ فالقرار المتفق عليه أو لا أحد. المساحة تشمل المياه الداخلية، والسكان تقديرات المقيمين لا المواطنين فقط. قياس الحجم يحتاج معايرة الشاشة ببطاقة حقيقية أولاً. تقدّم اللعبة محفوظ على هذا المتصفح، وليس بين أجهزة مختلفة.</p></details>
+ <div class="card"><label for="na">اسم الفريق الأزرق</label><input id="na" type="text" value="الفريق الأزرق">
+ <label for="nb">اسم الفريق الأحمر</label><input id="nb" type="text" value="الفريق الأحمر"></div>
+ <div class="card"><label>اختاروا الفئات (3 على الأقل)</label><div class="chips" id="cats"></div></div>
+ <div class="card"><label>وقت السؤال</label><div class="chips" id="times"></div></div>
+ <button class="big" id="start">ابدأوا اللعب</button>
+ <p><a href="../" style="color:var(--mut)">← الرئيسية</a></p>
+</section>
+
+<section id="game" class="screen">
+ <div class="top">
+  <div class="team a" id="ta"><div class="adj"><button data-d="a+">+</button><button data-d="a-">−</button></div><div><div id="tan"></div><b id="tas">0</b></div></div>
+  <button class="ghost" id="swap">بدّلوا الدور</button>
+  <div class="team b" id="tb"><div class="adj"><button data-d="b+">+</button><button data-d="b-">−</button></div><div><div id="tbn"></div><b id="tbs">0</b></div></div>
+ </div>
+ <p class="small" id="boardScrollHint" hidden>مرّروا اللوحة أفقياً لرؤية باقي الفئات.</p><div id="resumeTile" class="card" hidden><p>عندكم خانة مفتوحة محفوظة. أكملوها قبل اختيار خانة أخرى. إغلاق النافذة لا يلغي السؤال أو يعيد وقت العرض.</p><button id="resumeTileButton" class="big">أكملوا الخانة المفتوحة</button></div><div class="board" id="board" tabindex="0" aria-label="لوحة الفئات، قابلة للتمرير أفقياً"></div>
+ <p><button class="ghost" id="end">إنهاء اللعبة</button> <button class="ghost" id="quit">خروج وإكمال لاحقاً</button></p>
+</section>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="qinfo" tabindex="-1">
+ <div class="mhead"><button class="ghost" id="closeQ">إغلاق</button><div id="qinfo"></div><div class="timer" id="timer" role="timer" aria-live="off">0</div></div><div id="spbanner" style="display:none;margin:6px auto;padding:8px 14px;border-radius:12px;font-weight:800;text-align:center;max-width:600px"></div>
+ <div class="turnbar" id="turnbar"></div>
+ <div class="dblbadge" id="dblbadge"></div>
+ <details class="tools" id="tools"><summary>أدوات</summary><div class="pwbar"><button class="ghost" id="pause">⏸ إيقاف</button><button class="ghost" id="plus">+10 ث</button><span id="pwbar"></span></div><details style="margin-top:12px"><summary>شرح القوى</summary><p class="small" id="raidRules">خصم مقابل الفوز: مرة لكل فريق، في أسئلة القراءة فقط وقبل كشف الجواب. إن اختاره الحكم فائزاً، يأخذ قيمة السؤال ويخسر خصمه مثلها. لا خصم عند الخسارة، ولا جمع مع المضاعفة أو التقسيم. مكافأة الكنز منفصلة. جاوب أو اخسر: الفريق الآخر يتحدّى صاحب الدور مرة واحدة. يثبّت صاحب الدور جواباً شفهياً قبل الكشف؛ إن لم يفز يخسر قيمة السؤال، وإن فاز الآخر يأخذ قيمته. حكم الحاضرين، ولا جمع قوى. الدور لنا: الفريق الآخر يأخذ حق الإجابة وحده لهذا السؤال قبل الكشف، والحكم يختاره أو لا أحد؛ الدور التالي الأصلي لا يتغير. مرة لكل فريق، دون جمع قوى. استراحة لاعب: اختاروا لاعباً من الفريق صاحب الدور بعد تأكيد وجود زميل آخر يجيب؛ لا يساعد هذا السؤال فقط. تنفيذ باتفاق الحاضرين، دون تحقق آلي من الأشخاص أو تغيير النقاط.</p></details></details>
+ <div id="qbody"></div>
+</div>
+
+<section id="results" class="screen">
+ <h1>أبطال السهرة</h1>
+ <div class="card"><div id="winner" class="ans"></div><div class="guess"><div id="ra"></div><div id="rb"></div></div></div>
+ <button class="big" id="again">لعبة جديدة</button>
+</section>
+
+<script src="../storage.js"></script><script src="world.js"></script>
+<script src="world-detail.js"></script>
+<script src="map.js"></script>
+<script src="questions.js"></script><script src="heritage.js"></script><script src="space.js"></script><script src="ocean.js"></script><script src="memory.js"></script><script src="clock.js"></script><script src="acting.js"></script><script src="laser.js"></script><script src="comparison.js"></script><script src="state.js"></script><script src="powers.js"></script>
+<script>
+const KEY='hub_team_v1';
+const $=id=>document.getElementById(id);
+let badTeamSave=false;let dialogReturnFocus=null;let S=null, cfg={cats:new Set(['jo','sci','geo']),time:60}, cur=null, tick=null, paused=false;
+const ar=n=>String(n);
+function save(){HubStorage.setItem(KEY,JSON.stringify(S))}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');window.scrollTo(0,0)}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+// setup
+BANK.forEach(c=>{const b=document.createElement('button');b.className='chip'+(cfg.cats.has(c.id)?' sel':'');b.innerHTML='<i class="dot" style="background:'+c.color+'"></i>'+c.name;b.onclick=()=>{cfg.cats.has(c.id)?cfg.cats.delete(c.id):cfg.cats.add(c.id);b.classList.toggle('sel')};$('cats').appendChild(b)});
+[[30,'30 ث'],[60,'60 ث'],[90,'90 ث'],[0,'بدون وقت']].forEach(([v,t])=>{const b=document.createElement('button');b.className='chip'+(v===cfg.time?' sel':'');b.textContent=t;b.onclick=()=>{cfg.time=v;[...$('times').children].forEach(x=>x.classList.remove('sel'));b.classList.add('sel')};$('times').appendChild(b)});
+$('start').onclick=()=>{
+ if(badTeamSave||S)return;
+ if(cfg.cats.size<3){alert('اختاروا 3 فئات على الأقل');return}
+ S={a:$('na').value.trim().slice(0,80)||'الفريق الأزرق',b:$('nb').value.trim().slice(0,80)||'الفريق الأحمر',sa:0,sb:0,turn:'a',time:cfg.time,cats:BANK.filter(c=>cfg.cats.has(c.id)).map(c=>c.id),sel:pick(),pw:{a:{dbl:1,steal:1,raid:1,challenge:1,take:1,rest:1},b:{dbl:1,steal:1,raid:1,challenge:1,take:1,rest:1}},done:{},sp:{},open:null,stats:{lead:0,maxgap:0,last:null,t0:Date.now()}};
+ {const R=rng(),keys=[];S.cats.forEach(id=>S.sel[id].forEach(i=>{if(BANK.find(c=>c.id===id).q[i].p>=400)keys.push(id+i)}));for(let n=keys.length-1;n>0;n--){const j=Math.floor(R()*(n+1));[keys[n],keys[j]]=[keys[j],keys[n]]}keys.slice(0,2).forEach(k=>S.sp[k]='t');keys.slice(2,4).forEach(k=>S.sp[k]='b')}
+ save();renderBoard();show('game')};
+
+function rng(){const m=/[?&]seed=(\d+)/.exec(location.search);if(!m)return Math.random;let s=Number(m[1])>>>0;return()=>{s=(s+0x6D2B79F5)>>>0;let t=s;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function pick(){const R=rng();const sel={};BANK.filter(c=>cfg.cats.has(c.id)).forEach(c=>{const idx=[];[200,400,600].forEach(p=>{const pool=c.q.map((q,i)=>i).filter(i=>c.q[i].p===p);for(let n=pool.length-1;n>0;n--){const j=Math.floor(R()*(n+1));[pool[n],pool[j]]=[pool[j],pool[n]]}idx.push(...pool.slice(0,2))});sel[c.id]=idx});return sel}
+function renderBoard(){
+ $('resumeTile').hidden=!S.open;
+ $('tan').textContent=S.a;$('tbn').textContent=S.b;$('tas').textContent=ar(S.sa);$('tbs').textContent=ar(S.sb);
+ $('ta').classList.toggle('turn',S.turn==='a');$('tb').classList.toggle('turn',S.turn==='b');
+ const cats=BANK.filter(c=>S.cats.includes(c.id));
+ $('boardScrollHint').hidden=cats.length<4;const bd=$('board');bd.style.gridTemplateColumns='repeat('+cats.length+',minmax(92px,1fr))';bd.innerHTML='';
+ cats.forEach(c=>{const col=document.createElement('div');col.className='col';col.innerHTML='<h3><i class="dot" style="background:'+c.color+'"></i>'+c.name+'</h3>';
+  S.sel[c.id].forEach(i=>{const q=c.q[i],k=c.id+i,d=S.done[k];const t=document.createElement('button');t.className='tile'+(d?' done w'+d:'');t.textContent=ar(q.p);t.setAttribute('aria-label',c.name+'، '+q.p+' نقطة'+(d?'، انتهت':''));t.disabled=!!d||!!S.open;t.onclick=()=>openQ(c,i);col.appendChild(t)});
+  bd.appendChild(col)});
+ const gap=Math.abs(S.sa-S.sb);S.stats.maxgap=Math.max(S.stats.maxgap,gap);
+ const lead=S.sa>S.sb?'a':S.sb>S.sa?'b':null;if(lead&&S.stats.last&&S.stats.last!==lead)S.stats.lead++;if(lead)S.stats.last=lead;
+}
+document.querySelectorAll('.adj button').forEach(b=>{b.setAttribute('aria-label',(b.dataset.d[1]==='+'?'أضف 50 نقطة إلى ':'اطرح 50 نقطة من ')+(b.dataset.d[0]==='a'?'الفريق الأزرق':'الفريق الأحمر'));b.onclick=()=>{const d=b.dataset.d;if(d[0]==='a')S.sa+=d[1]==='+'?50:-50;else S.sb+=d[1]==='+'?50:-50;save();renderBoard()}});
+$('swap').onclick=()=>{S.turn=S.turn==='a'?'b':'a';save();renderBoard()};
+const nm=t=>t==='a'?S.a:S.b;
+
+// question flow. S.open = {cat,i,phase,first,guesses,left}
+function openQ(c,i){const k=c.id+i;if(S.done[k]||S.open)return;S.done[k]='x';S.open={cat:c.id,i,phase:'ask',first:S.turn,guess:{},left:S.time,dbl:null};save();renderBoard();showQ()}
+function qObj(){const c=BANK.find(x=>x.id===S.open.cat);return{c,q:c.q[S.open.i]}}
+function showQ(){
+ const {c,q}=qObj();dialogReturnFocus=document.activeElement;$('modal').classList.add('on');for(const section of document.querySelectorAll('.screen'))section.inert=true;
+ $('qinfo').textContent=c.name+' · '+ar(q.p)+' نقطة';
+ {const sp=(S.sp||{})[S.open.cat+S.open.i],b=$('spbanner');if(sp){b.style.display='block';b.style.background=sp==='t'?'#3a2f08':'#3a1010';b.style.border='2px solid '+(sp==='t'?'#ffd23f':'#ff3b5c');b.style.color=sp==='t'?'#ffd23f':'#ff7a8c';b.textContent=sp==='t'?'كنز! الفائز يأخذ +200 إضافية':'قنبلة! إن لم يفز أحد يخسر الفريق الذي فتح السؤال 100'}else b.style.display='none'}
+ $('timer').style.display=S.time?'flex':'none';$('plus').style.display=S.time?'':'none';$('pause').style.display=S.time?'':'none';
+ drawQ();requestAnimationFrame(()=>$('closeQ').focus());
+}
+function turnTeam(){const o=S.open;return o.guess[o.first]===undefined?o.first:(o.first==='a'?'b':'a')}
+let buf='',mpin=null;
+function tUI(on){$('timer').style.display=on&&S.time?'flex':'none';$('tools').style.display=on?'':'none';$('plus').style.display=on&&S.time?'':'none';$('pause').style.display=on&&S.time?'':'none'}
+function powerFocus(){requestAnimationFrame(()=>($('rev')||$('closeQ')).focus())}
+function pwUI(){const o=S.open,b=$('pwbar');b.innerHTML='';$('dblbadge').textContent='';if(!o)return;
+ if(o.rest){$('dblbadge').textContent='استراحة لاعب · '+o.rest.name+' من '+nm(o.first)+' لا يشارك في هذا السؤال فقط. باقي الفريق يجيب، والتحقق باتفاق الحاضرين. لا تغيير في النقاط أو الدور.';return}if(o.take){$('dblbadge').textContent='الدور لنا · '+nm(o.take)+' وحده يجيب شفهياً. الحكم يختار هذا الفريق أو لا أحد. لا نقاط للآخر في هذا السؤال؛ الدور التالي يبقى حسب اللوحة.';return}if(o.challenge){$('dblbadge').textContent='جاوب أو اخسر · '+nm(o.first)+' يثبّت جوابه شفهياً قبل الكشف. إن لم يفز يخسر قيمة السؤال، والفائز يأخذ قيمته. حكم الحاضرين، دون جمع قوى.';return}if(o.raid){$('dblbadge').textContent='خصم مقابل الفوز · '+nm(o.raid)+' · إن فاز يأخذ قيمة السؤال ويخسر الخصم مثلها؛ دون مضاعفة أو تقسيم. الكنز منفصل.';return}if(o.dbl||o.steal){$('dblbadge').textContent=(o.dbl?'×2 · '+nm(o.dbl):'')+(o.dbl&&o.steal?' · ':'')+(o.steal?'سرقة · '+nm(o.steal):'');if(o.phase!=='ask'||(o.dbl&&o.steal))return}
+ if(o.phase!=='ask')return;
+ const t=turnTeam(),challenger=o.first==='a'?'b':'a';if(TeamPowers.restAvailable(S,o,qObj().q,challenger)){const r=document.createElement('button');r.type='button';r.id='restPower';r.textContent='استراحة لاعب · '+nm(challenger);r.onclick=()=>{b.replaceChildren();const form=document.createElement('div'),label=document.createElement('label'),name=document.createElement('input'),agreeLabel=document.createElement('label'),agree=document.createElement('input'),ok=document.createElement('button'),cancel=document.createElement('button');label.textContent='اسم لاعب من '+nm(o.first)+' يستريح لهذا السؤال فقط';name.id='restName';name.maxLength=40;name.autocomplete='off';name.style.cssText='display:block;width:100%;max-width:100%;box-sizing:border-box;font:inherit;margin-top:8px;min-height:44px';label.append(name);agree.type='checkbox';agree.id='restAgree';agreeLabel.append(agree,' نؤكد أن فريقه يضم لاعباً آخر سيجيب، واتفقنا أن اللاعب المحدد لا يساعد في هذا السؤال. لا تحقق آلي من الأشخاص.');ok.type='button';ok.id='restConfirm';ok.textContent='ثبّت الاستراحة واستهلك القوة';ok.disabled=true;const update=()=>ok.disabled=!name.value.trim()||!agree.checked;name.oninput=agree.onchange=update;ok.onclick=()=>{if(TeamPowers.activateRest(S,o,qObj().q,challenger,name.value,agree.checked)){save();pwUI();powerFocus()}};cancel.type='button';cancel.id='restBack';cancel.textContent='رجوع دون استخدام';cancel.onclick=()=>{pwUI();$('restPower')?.focus()};form.style.cssText='display:grid;gap:12px;text-align:start;max-width:100%';form.append(label,agreeLabel,ok,cancel);b.append(form);name.focus()};b.appendChild(r)}if(TeamPowers.takeAvailable(S,o,qObj().q,challenger)){const k=document.createElement('button');k.type='button';k.id='takePower';k.textContent='الدور لنا · '+nm(challenger);k.onclick=()=>{if(TeamPowers.activateTake(S,o,qObj().q,challenger)){save();drawQ();powerFocus()}};b.appendChild(k)}if(TeamPowers.challengeAvailable(S,o,qObj().q,challenger)){const c=document.createElement('button');c.type='button';c.id='challengePower';c.textContent='جاوب أو اخسر · '+nm(challenger)+' يتحدّى '+nm(o.first);c.onclick=()=>{if(TeamPowers.activateChallenge(S,o,qObj().q,challenger)){save();pwUI();powerFocus()}};b.appendChild(c)}if(TeamPowers.raidAvailable(S,o,qObj().q,t)){const r=document.createElement('button');r.type='button';r.id='raidPower';r.textContent='خصم مقابل الفوز · '+nm(t);r.title='مرة لكل فريق في اللعبة. قبل كشف الجواب: إن اختاره الحكم فائزاً يأخذ قيمة السؤال ويخسر الخصم مثلها. لا يخصم عند الخسارة. لا يجتمع مع قوة أخرى.';r.onclick=()=>{if(TeamPowers.activateRaid(S,o,qObj().q,t)){save();pwUI();powerFocus()}};b.appendChild(r)}if(!o.dbl&&S.pw[t].dbl>0){const x=document.createElement('button');x.textContent='مضاعفة ×2 · '+nm(t);x.onclick=()=>{o.dbl=t;S.pw[t].dbl--;save();pwUI()};b.appendChild(x)}
+ if(!o.steal&&(S.pw[t].steal??0)>0){const y=document.createElement('button');y.textContent='سرقة · '+nm(t);y.title='إذا فاز الخصم تُقسم النقاط بينكم';y.onclick=()=>{o.steal=t;S.pw[t].steal--;save();pwUI()};b.appendChild(y)}}
+function drawQ(){
+ const o=S.open,{q}=qObj(),body=$('qbody');clearInterval(tick);tUI(o.phase==='ask');pwUI();
+ if(o.phase==='ask'){
+  const who=o.take||turnTeam();$('turnbar').innerHTML='دور <b style="color:'+(who==='a'?'var(--blue)':'var(--red)')+'">'+esc(nm(who))+'</b>';
+  if(q.t==='memory'){
+   $('turnbar').textContent='تحدٍّ مشترك للفريقين';
+   const revealedAt=Number(o.memUntil)||0,active=revealedAt>Date.now();
+   if(!o.memStarted){tUI(false);$('tools').style.display='';body.innerHTML='<div class="qtext">'+esc(q.q)+'</div><p class="memorynote">استعدوا جميعاً. عرض واحد لمدة 5 ثوانٍ، ثم يكتب كل فريق ترتيب الخلايا سراً بالإحداثيات (صف، عمود). لا كتابة أثناء العرض. يحكم المضيف بعد تثبيت الإجابتين، ولا ربط آلي بين الأجهزة.</p><div class="judge"><button class="big" id="memStart">الفريقان جاهزان، اعرض المسار</button></div>';$('memStart').onclick=()=>{if(o.memStarted)return;o.memStarted=true;o.memUntil=Date.now()+5000;save();drawQ()};return}
+   body.innerHTML='<div class="qtext">'+esc(q.q)+'</div><p class="memorynote" id="memStatus"></p>';body.appendChild(TeamMemory.grid(q.path,active));
+   if(active){tUI(false);const update=()=>{const n=Math.ceil((o.memUntil-Date.now())/1000);if(n<=0){clearInterval(tick);drawQ();return}$('memStatus').textContent='احفظوا الآن. المتبقي: '+n+' ثوانٍ'};update();tick=setInterval(update,100);return}
+   $('memStatus').textContent='انتهى العرض. يكتب كل فريق التسلسل سراً بالإحداثيات (صف، عمود)، ثم ثبّتوا الإجابتين قبل كشف الحل. الخلية أعلى اليسار هي 1,1.';
+   const group=document.createElement('div');group.className='judge';const reveal=document.createElement('button');reveal.className='big';reveal.id='memReveal';reveal.textContent='ثبّتنا الإجابتين، اكشف الحل';reveal.onclick=()=>{o.phase='reveal';save();drawQ()};group.appendChild(reveal);body.appendChild(group);startTimer(false);
+  }
+  else if(q.t==='compare'){drawTeamComparison(body,who,q);return}
+  else if(q.t==='laser'){drawTeamLaser(body,q);return}
+  else if(q.t==='acting'){drawActing(body,who,q);return}
+  else if(q.t==='clock'){drawTeamClock(body,who,q);return}
+  else if(q.t==='t'){body.innerHTML='<div class="qtext">'+esc(q.q)+'</div>'+(q.img?'<img src="'+esc(q.img)+'" alt="'+esc(q.alt||'رسم السؤال')+'" style="display:block;width:100%;max-height:42vh;object-fit:contain;margin:12px auto">':'')+'<div class="judge"><button class="big" id="rev">اكشفوا الجواب</button></div>';$('rev').onclick=()=>{o.phase='reveal';save();drawQ()};startTimer(false)}
+  else if(q.t==='r'){buf='';const sig=devicePixelRatio+'|'+(screen.width>screen.height?'l':'p');const ppc=(HubStorage.getItem('hub_sig')===sig&&Number(HubStorage.getItem('hub_ppc')))||0;
+   if(!ppc){body.innerHTML='<div class="qtext">معايرة الشاشة (مرة واحدة)</div><p class="small">استخدموا أي بطاقة بالحجم القياسي (بطاقة هوية أو دفع) وضعوها على الشاشة بشكل أفقي فقط لمقارنة الحجم، ولا تصوّروها ولا تُظهروا أرقامها. حرّكوا الشريط حتى يطابق عرض البطاقة (8.56 سم). دقة الأحجام الحقيقية تعتمد على هذه المعايرة، وتُعاد المعايرة عند تغيير التكبير أو دوران الشاشة.</p><div style="display:flex;justify-content:center;margin:14px 0"><div id="calbox" style="height:54px;background:#ffd23f;border-radius:8px"></div></div><input type="range" id="calr" min="150" max="'+Math.floor(innerWidth-30)+'" value="'+Math.min(300,innerWidth-40)+'" style="width:100%"><div class="judge"><button class="big" id="calok">تم</button></div>';
+    const cb=$('calbox'),cr=$('calr');const f=()=>cb.style.width=cr.value+'px';f();cr.oninput=f;$('calok').onclick=()=>{HubStorage.setItem('hub_ppc',(Number(cr.value)/8.56).toFixed(3));HubStorage.setItem('hub_sig',sig);showQ()};return}
+   const maxcm=Math.min(7,Math.floor((innerWidth-40)/ppc*10)/10),shape=q.shape||'c';let v=Math.min(maxcm,Math.max(1,Math.round(maxcm/2*10)/10));
+   body.innerHTML='<div class="qtext">'+esc(q.q)+'</div><div style="display:flex;justify-content:center;align-items:center;overflow:hidden;height:'+Math.ceil(maxcm*ppc+20)+'px"><div id="rsh" style="background:#ffd23f;"></div></div><div class="num" id="nv"></div><input type="range" id="rr" min="0.5" max="'+maxcm+'" step="0.1" style="width:100%"><div class="judge"><button class="big" id="rok">ثبّتوا</button></div><p class="small">حرّكوا الشريط ليطابق الحجم الحقيقي. لا يرى الفريق الثاني قياس الأول</p><p class="small"><a href="#" id="recal" style="color:var(--mut)">إعادة المعايرة</a></p>';$('recal').onclick=e=>{e.preventDefault();HubStorage.removeItem('hub_ppc');showQ()};
+   const rr=$('rr'),sh=$('rsh');const f=()=>{v=Number(rr.value);const px=v*ppc;sh.style.width=px+'px';sh.style.height=(shape==='c'?px:Math.max(8,px/4))+'px';sh.style.borderRadius=shape==='c'?'50%':'6px';$('nv').textContent=ar(v)+' سم'};rr.value=v;f();rr.oninput=f;
+   $('rok').onclick=()=>{buf=String(v);lock(who)};$('rcal')&&0;startTimer(true,who)}
+  else if(q.t==='m'){mpin=o.mapDraft&&o.mapDraft.team===who?o.mapDraft.pin:null;body.innerHTML='<div class="qtext" style="margin:8px 0">'+esc(q.q)+'</div><div id="mapbox" style="height:clamp(220px,min(60vw,48vh),520px);position:relative"></div><div class="judge" style="margin-top:10px"><button class="ghost zb" id="zi">+</button><button class="ghost zb" id="zo">−</button><button class="big" id="mlock" disabled>ثبّتوا</button></div><p class="small">اضغطوا على الخريطة لوضع الدبوس. لا يرى الفريق الثاني دبوس الأول.</p>';
+   const mv=MapView($('mapbox'),{pinColor:who==='a'?'#2a5bff':'#ff3b5c',onPin:p=>{mpin=p;o.mapDraft={team:who,pin:p};save();const b=$('mlock');b.disabled=false}});
+   if(mpin){mv.setPin(mpin);$('mlock').disabled=false}window.__mv=mv;$('zi').onclick=mv.zoomIn;$('zo').onclick=mv.zoomOut;$('mlock').onclick=()=>lock(who);startTimer(true,who)}
+  else{buf=o.numberDraft&&o.numberDraft.team===who?o.numberDraft.value:'';body.innerHTML='<div class="qtext">'+esc(q.q)+'</div><div class="num" id="nv">'+esc(buf||'؟')+'</div><div class="keys" id="keys"></div><p class="small">لا يرى الفريق الثاني رقم الأول</p>';
+   const k=$('keys');[1,2,3,4,5,6,7,8,9,0].forEach(n=>{const b=document.createElement('button');b.textContent=n;b.onclick=()=>{if(buf.length<9){buf+=n;o.numberDraft={team:who,value:buf};save();$('nv').textContent=buf}};k.appendChild(b)});
+   const del=document.createElement('button');del.textContent='⌫';del.onclick=()=>{buf=buf.slice(0,-1);o.numberDraft={team:who,value:buf};save();$('nv').textContent=buf||'؟'};k.appendChild(del);
+   const ok=document.createElement('button');ok.textContent='ثبّتوا';ok.style.gridColumn='span 4';ok.className='big';ok.onclick=()=>lock(who);k.appendChild(ok);
+   startTimer(true,who)}
+ }else drawReveal();
+}
+function lock(who,empty){const o=S.open,Q=qObj().q;if(Q.t==='m'){if(!mpin&&!empty)return;o.guess[who]=mpin?{lat:mpin.lat,lon:mpin.lon}:null;mpin=null;delete o.mapDraft}else{if(!buf&&!empty)return;o.guess[who]=buf?Number(buf):null;buf='';delete o.numberDraft}o.left=S.time;
+ if(o.guess.a!==undefined&&o.guess.b!==undefined)o.phase='reveal';save();drawQ()}
+function startTimer(auto,who){
+ const o=S.open;if(!S.time)return;paused=false;draw();
+ tick=setInterval(()=>{if(paused)return;o.left=Math.max(0,o.left-1);draw();if(o.left===0){clearInterval(tick);if(auto){lock(who,true)}}},1000);
+ function draw(){const t=$('timer');t.textContent=ar(o.left);t.classList.toggle('low',o.left<=10);save()}
+}
+$('pause').onclick=()=>{paused=!paused;$('pause').textContent=paused?'▶ استئناف':'⏸ إيقاف'};
+$('plus').onclick=()=>{if(S.open){S.open.left+=10;$('timer').textContent=ar(S.open.left)}};
+$('closeQ').onclick=()=>{clearInterval(tick);cancelAnimationFrame(teamClockFrame);$('modal').classList.remove('on');for(const section of document.querySelectorAll('.screen'))section.inert=false;save();renderBoard();$('resumeTileButton').focus()};$('resumeTileButton').onclick=()=>{if(S&&S.open)showQ()};
+function drawReveal(){
+ const o=S.open,{q}=qObj(),body=$('qbody');clearInterval(tick);$('turnbar').textContent='';
+ if(q.t==='compare'){revealTeamComparison(body,q);return}
+ let html='<div class="qtext">'+esc(q.q)+'</div><div class="ans">'+esc(ar(q.a))+(q.t==='r'?' سم':'')+'</div>';let hint='',tie=false;
+ const U=q.t==='r'?' سم':q.t==='clock'?' ث':'';if(q.t==='n'||q.t==='r'||q.t==='clock'){const ga=o.guess.a,gb=o.guess.b,da=ga==null?Infinity:Math.abs(ga-q.a),db=gb==null?Infinity:Math.abs(gb-q.a);const card=(t,g,d,col)=>'<div class="gc" style="border-color:'+col+'"><div class="gn" style="color:'+col+'">'+esc(t)+'</div><div class="gv">'+(g==null?'—':ar(g)+U)+'</div><div class="gs">'+(g==null?'لم يجب':d?'الفرق '+ar(Math.round(d*10)/10)+U:'بالضبط')+'</div></div>';
+  html+='<div class="guess">'+card(S.a,ga,da,'var(--blue)')+card(S.b,gb,db,'var(--red)')+'</div>';
+  hint=da===Infinity&&db===Infinity?'':da<db?'a':db<da?'b':o.first;tie=da===db&&da!==Infinity;}
+if(q.t==='m'){const ga=o.guess.a,gb=o.guess.b,da=ga?distToTarget(ga,q):Infinity,db=gb?distToTarget(gb,q):Infinity;
+  const card=(t,g,d,col)=>'<div class="gc" style="border-color:'+col+'"><div class="gn" style="color:'+col+'">'+esc(t)+'</div><div class="gv">'+(!g?'—':d===0?'داخل البلد':Math.round(d).toLocaleString('en')+' كم')+'</div><div class="gs">'+(!g?'لم يجب':'المسافة عن الهدف')+'</div></div>';
+  html='<div class="qtext" style="margin:8px 0">'+esc(q.q)+'</div><div id="mapbox" style="height:clamp(200px,52vw,420px);position:relative"></div><div class="small" style="font-size:.7rem">Natural Earth (ملكية عامة)</div><div class="guess">'+card(S.a,ga,da,'var(--blue)')+card(S.b,gb,db,'var(--red)')+'</div>';
+  hint=da===Infinity&&db===Infinity?'':da<db?'a':db<da?'b':o.first;tie=da===db&&da!==Infinity;
+  setTimeout(()=>{const mv=MapView($('mapbox'),{readonly:true});const marks=[],lines=[];const tg=q.lat!=null?{lat:q.lat,lon:q.lon}:null;if(tg)marks.push({lat:tg.lat,lon:tg.lon,color:'#ffd23f',big:true});
+   if(ga){marks.push({lat:ga.lat,lon:ga.lon,color:'#2a5bff'});if(tg)lines.push({a:[ga.lat,ga.lon],b:[tg.lat,tg.lon],color:'#2a5bff'})}
+   if(gb){marks.push({lat:gb.lat,lon:gb.lon,color:'#ff3b5c'});if(tg)lines.push({a:[gb.lat,gb.lon],b:[tg.lat,tg.lon],color:'#ff3b5c'})}
+   mv.setMarks(marks,lines,q.geo||null);mv.fit([...targetPoints(q),ga,gb])},0)}
+ html+='<div class="judge"><button class="jA'+(hint==='a'?' jhint':'')+'" data-w="a">'+esc(S.a)+'</button><button class="jB'+(hint==='b'?' jhint':'')+'" data-w="b">'+esc(S.b)+'</button><button class="jN" data-w="n">لا أحد</button></div>'+(tie?'<p class="small">تعادلتم في القرب، والتلميح للفريق الذي ثبّت أولاً. القرار لكم.</p>':((q.t==='n'||q.t==='r'||q.t==='m'||q.t==='clock')&&!hint?'<p class="small">لم يجب أحد. اختاروا «لا أحد» أو احكموا يدوياً.</p>':''));
+ body.innerHTML=html;if(q.source){const p=document.createElement('p'),a=document.createElement('a');a.href=q.source;a.textContent='مصدر المعلومة';a.target='_blank';a.rel='noopener';p.append(a);body.append(p)}
+ if(q.t==='laser'){const p=q.puzzle,solutions=[];for(let n=0;n<8;n++){const rot=p.mirrors.map((_,i)=>n>>i&1?'/':'\\');if(TeamLaser.trace(p,rot).hit)solutions.push(rot)}const answer=body.querySelector('.ans');answer.textContent='';const label=document.createElement('p');label.className='memorynote';label.textContent='اتجاه المرايا بالترتيب (صف، عمود):';answer.appendChild(label);p.mirrors.forEach((m,i)=>{const line=document.createElement('p');line.className='memorynote';line.dir='ltr';line.textContent='('+ (m[0]+1)+','+(m[1]+1)+') : '+solutions[0][i];answer.appendChild(line)})}
+ if(q.t==='memory'){const answer=body.querySelector('.ans');answer.replaceChildren(TeamMemory.grid(q.path,true));const note=document.createElement('p');note.className='memorynote';note.textContent=q.path.map(c=>'('+((c/4|0)+1)+','+(c%4+1)+')').join(' → ');note.dir='ltr';note.style.unicodeBidi='isolate';answer.appendChild(note)}
+ body.querySelectorAll('.judge button').forEach(b=>{if(o.take&&b.dataset.w!=='n'&&b.dataset.w!==o.take)b.hidden=true;if(['acting','laser'].includes(q.t)&&b.dataset.w!=='n'&&b.dataset.w!==o.first)b.hidden=true;b.onclick=()=>judge(b.dataset.w)});
+}
+function judge(w){if(!S||!S.open||S.open.phase!=='reveal'||!['a','b','n'].includes(w))return;const o=S.open,{q}=qObj();if(!TeamPowers.validWinner(o,w))return;if(['acting','laser'].includes(q.t)&&w!=='n'&&w!==o.first)return;const k=o.cat+o.i;
+ const delta=TeamPowers.score(o,q,w,(S.sp||{})[k]),ga=delta.a,gb=delta.b;
+ S.sa+=ga;S.sb+=gb;S.done[k]=w==='n'?'x':w;
+ S.turn=o.first==='a'?'b':'a';S.open=null;save();$('modal').classList.remove('on');for(const section of document.querySelectorAll('.screen'))section.inert=false;renderBoard();if(dialogReturnFocus&&dialogReturnFocus.isConnected&&dialogReturnFocus.getClientRects().length&&!dialogReturnFocus.disabled)dialogReturnFocus.focus();else $('board').focus();
+ if(allDone())finish()}
+function allDone(){return S.cats.every(id=>S.sel[id].every(i=>S.done[id+i]))}
+function finish(){
+ const w=S.sa>S.sb?S.a:S.sb>S.sa?S.b:null;
+ $('winner').textContent=w?'🏆 '+w:'تعادل!';
+ $('ra').textContent=S.a+': '+ar(S.sa);$('rb').textContent=S.b+': '+ar(S.sb);
+ S.finished=true;save();show('results')}
+$('end').onclick=()=>{if(confirm('إنهاء اللعبة الآن؟'))finish()};
+$('quit').onclick=()=>{save();location.href='../'};
+$('again').onclick=()=>{HubStorage.removeItem(KEY);S=null;show('setup')};
+
+document.addEventListener('keydown',e=>{if(!$('modal').classList.contains('on'))return;if(e.key==='Escape'){e.preventDefault();$('closeQ').click();return}if(e.key!=='Tab')return;const nodes=[...$('modal').querySelectorAll('button,a[href],input,select,textarea,[tabindex]')].filter(x=>!x.disabled&&x.tabIndex>=0&&x.getClientRects().length);if(!nodes.length){e.preventDefault();$('modal').focus();return}const first=nodes[0],last=nodes.at(-1);if(e.shiftKey&&(document.activeElement===first||!$('modal').contains(document.activeElement))){e.preventDefault();last.focus()}else if(!e.shiftKey&&(document.activeElement===last||!$('modal').contains(document.activeElement))){e.preventDefault();first.focus()}});
+// resume
+try{const raw=HubStorage.getItem(KEY);if(raw!==null){const parsed=JSON.parse(raw);if(!validTeamState(parsed,BANK))throw Error('Invalid team save');S=parsed;if(S.finished)finish();else{renderBoard();show('game');if(S.open)showQ()}}}catch(e){S=null;badTeamSave=true;show('corruptSave')}
+$('forgetSave').onclick=()=>{if(!badTeamSave||!confirm('حذف حفظ فريق ضد فريق فقط، بما فيه الدرجات؟'))return;HubStorage.removeItem(KEY);badTeamSave=false;S=null;show('setup')};
+</script>
+</body>
+</html>

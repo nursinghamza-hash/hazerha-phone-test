@@ -1,0 +1,9 @@
+export const KEY='hazerha_judge311';
+export const prompts=['اختاروا اسماً مضحكاً لفريق خيالي معاً.','اذكروا ميزتين لطيفتين في مدينة خيالية.','اخترعوا إعلاناً قصيراً لقلم لا يكتب.','اكتبوا عنوان فيلم عن قط يبحث عن وسادته.','تخيلوا مطعماً في القمر: ماذا يقدم؟','اذكروا ثلاثة استعمالات خيالية لصندوق فارغ.','صمموا بالكلام شعار فريقكما.','اقترحوا اسماً لكوكب مصنوع من الجبن.','اخترعوا جملة ترحيب لروبوت خجول.','صفوا رحلة خيالية في غواصة إلى مكتبة.','تبادلوا اقتراحين لاسم مقهى للقطط.','اختاروا بطلاً خيالياً وقوة لطيفة له.'];
+const int=(x,a,b)=>Number.isInteger(x)&&x>=a&&x<=b;
+export function valid(s){return s?.v===311&&int(s.n,4,12)&&Array.isArray(s.order)&&s.order.length===s.n&&new Set(s.order).size===s.n&&s.order.every(x=>int(x,0,s.n-1))&&int(s.dealt,0,s.n)&&['deal','choose','challenge','end'].includes(s.phase)&&(s.phase==='deal'?s.dealt<s.n:s.dealt===s.n)&&int(s.round,1,1000000)&&(s.prompt===null||int(s.prompt,0,prompts.length-1))&&Array.isArray(s.actors)&&((['challenge','end'].includes(s.phase))?(s.prompt!==null&&s.actors.length===2&&s.actors[0]!==s.actors[1]&&s.actors.every(x=>int(x,1,s.n-2))):(s.prompt===null&&s.actors.length===0))}
+export function create(order,round=1){const s={v:311,n:order.length,order:[...order],round,dealt:0,phase:'deal',prompt:null,actors:[]};if(!valid(s))throw Error('invalid game');return s}
+export function role(s,seat){const k=s.order.indexOf(seat);return k===0?'القاضي':k===1?'مساعد الجولة':'المشارك رقم '+(k-1)}
+export function hide(s){if(s.phase!=='deal')return s;const dealt=s.dealt+1;return {...s,dealt,phase:dealt===s.n?'choose':'deal'}}
+export function choose(s,a,b,prompt){if(s.phase!=='choose'||!int(a,1,s.n-2)||!int(b,1,s.n-2)||a===b||!int(prompt,0,prompts.length-1))return s;return {...s,actors:[a,b],prompt,phase:'challenge'}}
+export function finish(s){return s.phase==='challenge'?{...s,phase:'end'}:s}

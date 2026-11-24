@@ -1,0 +1,11 @@
+export const KEY='hazerha_investigation315';const int=(x,a,b)=>Number.isInteger(x)&&x>=a&&x<=b;
+export function valid(s){return s?.v===315&&int(s.n,4,20)&&[s.planter,s.doctor,s.victim].every(x=>int(x,0,s.n-1))&&new Set([s.planter,s.doctor,s.victim]).size===3&&int(s.dealt,0,s.n)&&['deal','ready','active','paused','accuse','end'].includes(s.phase)&&(s.phase==='deal'?s.dealt<s.n:s.dealt===s.n)&&(s.protected===null||int(s.protected,0,s.n-1))&&(s.phase==='deal'||s.protected!==null)&&int(s.remaining,0,90000)&&Number.isFinite(s.deadline)&&s.deadline>=0&&(s.phase!=='active'||s.deadline>0)&&(s.suspect===null||int(s.suspect,0,s.n-1)&&s.suspect!==s.victim)&&(s.phase==='end'?s.suspect!==null:s.suspect===null)}
+export function create(n,planter,doctor,victim){const s={v:315,n,planter,doctor,victim,dealt:0,protected:null,phase:'deal',remaining:90000,deadline:0,suspect:null};if(!valid(s))throw Error('invalid');return s}
+export const role=s=>s.dealt===s.planter?'أنت زارع القنبلة. الضحية هي اللاعب '+(s.victim+1)+'. حاول إقناعه ببراءتك.':s.dealt===s.doctor?'أنت الطبيب. اختر لاعباً تحميه قبل التحقيق، دون معرفة الضحية.':s.dealt===s.victim?'أنت الضحية. بعد التوزيع أعلن نفسك وحقق ثم اختر متهماً واحداً.':'أنت بريء. ساعد النقاش، ولا تعرف زارع القنبلة.';
+export function hide(s,protection=null){if(s.phase!=='deal')return s;if(s.dealt===s.doctor&&!int(protection,0,s.n-1))return s;const dealt=s.dealt+1;return {...s,dealt,protected:s.dealt===s.doctor?protection:s.protected,phase:dealt===s.n?'ready':'deal'}}
+export function start(s,now){return ['ready','paused'].includes(s.phase)?{...s,phase:'active',deadline:now+s.remaining}:s}
+export function tick(s,now){return s.phase==='active'&&now>=s.deadline?{...s,phase:'accuse',remaining:0,deadline:0}:s}
+export function pause(s,now){const t=tick(s,now);return t.phase==='active'?{...t,phase:'paused',remaining:Math.max(0,Math.min(t.remaining,t.deadline-now)),deadline:0}:t}
+export function stop(s){return ['active','paused'].includes(s.phase)?{...s,phase:'accuse',deadline:0,remaining:0}:s}
+export function accuse(s,suspect){return s.phase==='accuse'&&int(suspect,0,s.n-1)&&suspect!==s.victim?{...s,phase:'end',suspect}:s}
+export const outcome=s=>s.suspect===s.planter?'caught':s.protected===s.victim?'saved':'victim';

@@ -1,0 +1,10 @@
+export const KEY='hazerha_bomb310';
+export const prompts=['اذكر أكلة بلا تكرار في هذه الجولة','اذكر حيواناً بلا تكرار في هذه الجولة','اذكر شيئاً في المطبخ بلا تكرار','اذكر مدينة بلا تكرار في هذه الجولة','اذكر شيئاً لونه أحمر بلا تكرار','اذكر وسيلة نقل بلا تكرار','اذكر شيئاً في المدرسة بلا تكرار','اذكر فاكهة أو خضاراً بلا تكرار','اذكر شيئاً يؤخذ في السفر بلا تكرار','اذكر مهنة بلا تكرار','اذكر شيئاً دائرياً بلا تكرار','اذكر شيئاً في الحديقة بلا تكرار'];
+const integer=(x,a,b)=>Number.isInteger(x)&&x>=a&&x<=b;
+export function valid(s){return s?.v===310&&integer(s.n,2,12)&&integer(s.turn,0,s.n-1)&&integer(s.round,1,1000000)&&integer(s.prompt,0,prompts.length-1)&&['ready','active','paused','end'].includes(s.phase)&&integer(s.remaining,0,40000)&&Number.isFinite(s.deadline)&&s.deadline>=0&&Array.isArray(s.scores)&&s.scores.length===s.n&&s.scores.every(x=>integer(x,0,1000000))&&(s.loser===null||integer(s.loser,0,s.n-1))&&(s.phase==='end'?s.loser!==null:s.loser===null)&&(s.phase!=='active'||s.deadline>0)}
+export function create(n,duration,prompt,turn=0,scores=Array(n).fill(0),round=1){const s={v:310,n,turn,round,prompt,phase:'ready',remaining:duration,deadline:0,scores:[...scores],loser:null};if(!valid(s)||duration<20000)throw Error('invalid game');return s}
+export function start(s,now){if(!['ready','paused'].includes(s.phase)||!Number.isFinite(now)||now<0)return s;return {...s,phase:'active',deadline:now+s.remaining}}
+export function tick(s,now){if(s.phase!=='active'||now<s.deadline)return s;const scores=[...s.scores];scores[s.turn]++;return {...s,phase:'end',remaining:0,deadline:0,scores,loser:s.turn}}
+export function pass(s,now){const t=tick(s,now);return t.phase==='active'?{...t,turn:(t.turn+1)%t.n}:t}
+export function pause(s,now){const t=tick(s,now);return t.phase==='active'?{...t,phase:'paused',remaining:Math.max(0,Math.min(t.remaining,t.deadline-now)),deadline:0}:t}
+export function next(s,duration,prompt){if(s.phase!=='end')return s;return create(s.n,duration,prompt,(s.loser+1)%s.n,s.scores,s.round+1)}

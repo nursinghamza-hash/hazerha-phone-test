@@ -1,0 +1,19 @@
+import{KEY,prompts,valid,create,role,hide,choose,finish}from'./engine.mjs';
+const $=id=>document.getElementById(id);let state=null,shown=false;
+function save(){try{HubStorage.setItem(KEY,JSON.stringify(state));if(HubStorage.getItem(KEY)!==JSON.stringify(state))throw Error()}catch{$('status').textContent='تعذّر الحفظ. أبقوا الصفحة مفتوحة؛ الجولة هنا فقط.'}}
+try{const s=JSON.parse(HubStorage.getItem(KEY));if(valid(s))state=s}catch{}
+function random(n){const b=new Uint32Array(1),limit=Math.floor(4294967296/n)*n;do{crypto.getRandomValues(b)}while(b[0]>=limit);return b[0]%n}
+function order(n){const a=Array.from({length:n},(_,i)=>i);for(let i=n-1;i>0;i--){const j=random(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+function el(tag,t,cls=''){const x=document.createElement(tag);x.textContent=t;x.className=cls;return x}
+function btn(t,id,fn,secondary=false){const b=el('button',t,secondary?'secondary':'');b.id=id;b.onclick=fn;return b}
+function change(s){state=s;shown=false;save();render();$('stage').focus()}
+function select(id,min,max){const s=el('select','');s.id=id;for(let i=min;i<=max;i++)s.add(new Option(String(i),String(i)));return s}
+function render(){document.body.classList.toggle('compact',!!state&&state.phase!=='end');const root=$('stage');root.replaceChildren();const box=el('div','','card stack');root.append(box);
+if(!state){const l=el('label','عدد اللاعبين');l.htmlFor='count';const s=select('count',4,12);s.value='6';box.append(l,s,btn('وزّع الأدوار','create',()=>change(create(order(Number(s.value))))))}
+else if(state.phase==='deal'){box.append(el('p','الجولة '+state.round+' · اللاعب '+(state.dealt+1),'mut'));if(shown){box.append(el('p',role(state,state.dealt),'role'),el('p','احفظ دورك ورقمك إن وجد. لا تعرض الشاشة للآخرين.'),btn('حفظت دوري، أخفِ وسلّم','hide',()=>change(hide(state))))}else box.append(el('h2','الجهاز للاعب '+(state.dealt+1)),el('p','تأكد أن الآخرين لا يرون الشاشة. لا تفتح دور غيرك.'),btn('أنا هذا اللاعب، اكشف دوري','reveal',()=>{shown=true;render();$('stage').focus()}))}
+else if(state.phase==='choose'){box.append(el('h2','القاضي والمساعد: أعلنا دوريكما'),el('p','القاضي يختار رقمين مختلفين من المشاركين. البقية يحتفظون بأرقامهم حتى تظهر الفكرة.'));const pair=el('div','','pair');for(const[id,t]of[['a','الرقم الأول'],['b','الرقم الثاني']]){const l=el('label',t);const s=select(id,1,state.n-2);s.value=id==='a'?'1':'2';l.htmlFor=id;l.append(s);pair.append(l)}box.append(pair,btn('اعرض الفكرة','choose',()=>{const a=Number($('a').value),b=Number($('b').value);if(a===b){$('status').textContent='اختاروا رقمين مختلفين.';return}change(choose(state,a,b,random(prompts.length)));$('status').textContent=''}))}
+else if(state.phase==='challenge'){box.append(el('h2','المشاركان '+state.actors[0]+' و '+state.actors[1]),el('p',prompts[state.prompt],'role'),el('p','فكرة اختيارية. شاركا فقط إن رغبتما. يمكن لأي منكما تخطيها بلا سبب.','mut'),btn('شاركنا، أنهِ الجولة','done',()=>change(finish(state))),btn('نتخطى بلا سبب','skip',()=>change(finish(state)),true))}
+else{box.append(el('h2','انتهت الجولة '+state.round),el('p','لا نقاط ولا عقوبات. المشاركة والتخطي كلاهما مقبول.'),btn('جولة جديدة بأدوار جديدة','next',()=>change(create(order(state.n),state.round+1))))}
+if(state&&!shown){const d=el('details','');d.append(el('summary','حذف الجلسة وتغيير العدد'),el('p','سيُحذف تقدم توزيع الجولة الحالية.'),btn('أؤكد حذف الجلسة','reset',()=>change(null),true));root.append(d)}}
+function conceal(){if(shown){shown=false;render()}}
+window.addEventListener('blur',conceal);window.addEventListener('pagehide',conceal);document.addEventListener('visibilitychange',()=>{if(document.hidden)conceal()});window.addEventListener('storage',e=>{if(e.key!==KEY)return;shown=false;try{const s=JSON.parse(e.newValue);state=valid(s)?s:null}catch{state=null}render();$('status').textContent='تغيّرت الجولة في نافذة أخرى. تحققوا من صاحب الجهاز.'});render();

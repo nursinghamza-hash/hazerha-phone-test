@@ -1,0 +1,6 @@
+export const KEY='hazerha_wink309';
+export const valid=s=>s?.v===309&&Number.isInteger(s.n)&&s.n>=4&&s.n<=12&&Number.isInteger(s.k)&&s.k>=0&&s.k<s.n&&['deal','play','end'].includes(s.phase)&&Number.isInteger(s.at)&&s.at>=0&&s.at<s.n&&Array.isArray(s.out)&&new Set(s.out).size===s.out.length&&s.out.every(x=>Number.isInteger(x)&&x>=0&&x<s.n&&x!==s.k)&&(['witnesses','wink',null].includes(s.winner))&&(s.phase==='end'?s.winner!==null:s.winner===null)&&Number.isInteger(s.round)&&s.round>0&&(s.phase!=='deal'||(s.out.length===0&&s.winner===null))&&(s.phase!=='play'||s.out.length<s.n-2);
+export function newGame(n,k,round=1){const s={v:309,n,k,round,phase:'deal',at:0,out:[],winner:null,reason:''};if(!valid(s))throw Error('invalid game');return s}
+export function next(s){if(s.phase!=='deal')return s;return s.at===s.n-1?{...s,phase:'play'}:{...s,at:s.at+1}}
+export function eliminate(s,p){if(s.phase!=='play'||s.out.includes(p)||p<0||p>=s.n||!Number.isInteger(p))return s;if(p===s.k)return {...s,phase:'end',winner:'witnesses',reason:'self'};const out=[...s.out,p];return out.length>=s.n-2?{...s,out,phase:'end',winner:'wink',reason:'survived'}:{...s,out}}
+export function accuse(s,p){if(s.phase!=='play'||s.out.includes(p)||p<0||p>=s.n||!Number.isInteger(p))return s;return {...s,phase:'end',winner:p===s.k?'witnesses':'wink',reason:p===s.k?'caught':'wrong'}}

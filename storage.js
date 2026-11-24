@@ -1,0 +1,6 @@
+/* Browser storage can be disabled or full. Keep the current tab playable, but never claim reload recovery in that case. */
+window.HubStorage=(()=>{
+ const pending=new Map();let warned=false;
+ function warn(){if(warned)return;warned=true;const show=()=>{const el=document.createElement('aside');el.id='storageWarning';el.setAttribute('role','alert');el.dir='rtl';el.style.cssText='position:relative;z-index:100000;background:#5b2634;color:#fff2f3;padding:16px;font:16px/1.8 system-ui;border-bottom:2px solid #ffafbd;text-align:center';el.textContent='تنبيه: تعذّر حفظ التقدّم في المتصفح. يمكنك إكمال اللعب في هذه الصفحة، لكن التقدّم الجديد قد يضيع عند التحديث أو الإغلاق. فعّل تخزين الموقع أو حرّر مساحة قبل بدء لعبة تريد حفظها.';document.body.prepend(el)};document.body?show():document.addEventListener('DOMContentLoaded',show,{once:true})}
+ return {getItem(key){if(pending.has(key))return pending.get(key);try{return window.localStorage.getItem(key)}catch(e){warn();return null}},setItem(key,value){value=String(value);try{window.localStorage.setItem(key,value);pending.delete(key)}catch(e){pending.set(key,value);warn()}},removeItem(key){try{window.localStorage.removeItem(key);pending.delete(key)}catch(e){pending.set(key,null);warn()}}};
+})();
